@@ -34,9 +34,12 @@ Jelaskan cara menggunakan proyek Anda dan berikan contoh atau potongan kode untu
 
 Contoh penggunaan menampilkan gambar, judul, dan deskripsi:
 
-```markdown
 
-![https://avatars.githubusercontent.com/u/8328864?v=4]
+
+![Nama Gambar](https://avatars.githubusercontent.com/u/8328864?v=4)
+
+Deskripsi gambar.
+
 
 ## Judul
 
