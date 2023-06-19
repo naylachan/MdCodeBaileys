@@ -36,7 +36,7 @@ Contoh penggunaan menampilkan gambar, judul, dan deskripsi:
 
 ```markdown
 
-![Gambar Proyek](https://avatars.githubusercontent.com/u/8328864?v=4)
+![https://avatars.githubusercontent.com/u/8328864?v=4]
 
 ## Judul
 
