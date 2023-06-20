@@ -1,13 +1,14 @@
 /// <reference types="node" />
 /// <reference types="node" />
 /// <reference types="node" />
-import type NodeCache from 'node-cache';
+import { AxiosRequestConfig } from 'axios';
 import type { Logger } from 'pino';
 import type { Readable } from 'stream';
 import type { URL } from 'url';
 import { proto } from '../../WAProto';
 import { MEDIA_HKDF_KEY_MAPPING } from '../Defaults';
 import type { GroupMetadata } from './GroupMetadata';
+import { CacheStore } from './Socket';
 export { proto as WAProto };
 export declare type WAMessage = proto.IWebMessageInfo;
 export declare type WAMessageContent = proto.IMessage;
@@ -55,6 +56,10 @@ declare type Mentionable = {
     /** list of jids that are mentioned in the accompanying text */
     mentions?: string[];
 };
+declare type Contextable = {
+    /** add contextInfo to the message */
+    contextInfo?: proto.IContextInfo;
+};
 declare type ViewOnce = {
     viewOnce?: boolean;
 };
@@ -79,17 +84,24 @@ declare type WithDimensions = {
     width?: number;
     height?: number;
 };
+export declare type PollMessageOptions = {
+    name: string;
+    selectableCount?: number;
+    values: string[];
+    /** 32 byte message secret to encrypt poll selections */
+    messageSecret?: Uint8Array;
+};
 export declare type MediaType = keyof typeof MEDIA_HKDF_KEY_MAPPING;
 export declare type AnyMediaMessageContent = (({
     image: WAMediaUpload;
     caption?: string;
     jpegThumbnail?: string;
-} & Mentionable & Buttonable & Templatable & WithDimensions) | ({
+} & Contextable & Mentionable & Buttonable & Templatable & WithDimensions) | ({
     video: WAMediaUpload;
     caption?: string;
     gifPlayback?: boolean;
     jpegThumbnail?: string;
-} & Mentionable & Buttonable & Templatable & WithDimensions) | {
+} & Contextable & Mentionable & Buttonable & Templatable & WithDimensions) | {
     audio: WAMediaUpload;
     /** if set to true, will send as a `voice note` */
     ptt?: boolean;
@@ -117,7 +129,9 @@ export declare type WASendableProduct = Omit<proto.Message.ProductMessage.IProdu
 export declare type AnyRegularMessageContent = (({
     text: string;
     linkPreview?: WAUrlInfo | null;
-} & Mentionable & Buttonable & Templatable & Listable) | AnyMediaMessageContent | {
+} & Contextable & Mentionable & Buttonable & Templatable & Listable) | AnyMediaMessageContent | ({
+    poll: PollMessageOptions;
+} & Contextable & Mentionable & Buttonable & Templatable) | {
     contacts: {
         displayName?: string;
         contacts: proto.Message.IContactMessage[];
@@ -192,8 +206,9 @@ export declare type MediaGenerationOptions = {
     mediaTypeOverride?: MediaType;
     upload: WAMediaUploadFunction;
     /** cache media so it does not have to be uploaded again */
-    mediaCache?: NodeCache;
+    mediaCache?: CacheStore;
     mediaUploadTimeoutMs?: number;
+    options?: AxiosRequestConfig;
 };
 export declare type MessageContentGenerationOptions = MediaGenerationOptions & {
     getUrlInfo?: (text: string) => Promise<WAUrlInfo | undefined>;
